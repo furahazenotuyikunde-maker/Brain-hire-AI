@@ -16,8 +16,8 @@ const Dashboard = () => {
         const fetchDashboardData = async () => {
             try {
                 const [statsRes, jobsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/stats'),
-                    axios.get('http://localhost:5000/api/jobs')
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/stats`),
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs`)
                 ]);
 
                 const s = statsRes.data;

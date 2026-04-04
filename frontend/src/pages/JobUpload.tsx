@@ -37,8 +37,8 @@ const JobUpload = () => {
         files.forEach(file => formData.append('resumes', file));
 
         try {
-            console.log('Starting API Request to:', 'http://localhost:5000/api/analyze');
-            const response = await axios.post('http://localhost:5000/api/analyze', formData, {
+            console.log('Starting API Request to:', `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/analyze`);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/analyze`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             
