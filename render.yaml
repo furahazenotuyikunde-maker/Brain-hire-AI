@@ -2,12 +2,15 @@ services:
   - type: web
     name: brain-hire-ai-backend
     env: node
+    rootDirectory: backend
     envVars:
       - key: NODE_VERSION
         value: 20
+      - key: NODE_ENV
+        value: development
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
         sync: false
-    buildCommand: cd backend && npm install && npm run build
-    startCommand: cd backend && npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm start
