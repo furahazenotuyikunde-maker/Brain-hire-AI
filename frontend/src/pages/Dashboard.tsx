@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, MoreVertical, Search, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';

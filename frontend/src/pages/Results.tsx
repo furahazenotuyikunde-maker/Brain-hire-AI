@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Award, TrendingUp, TrendingDown, Info, Table, LayoutGrid, CheckCircle, Search, Filter, Mail, Phone, ExternalLink } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Award, TrendingUp, TrendingDown, Info, Search, Filter, Mail, Phone, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Candidate {

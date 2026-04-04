@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, Plus, FileText, Send, CheckCircle, Info, Trash2, X } from 'lucide-react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { Upload, FileText, Send, Info, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const JobUpload = () => {
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<string | null>(null);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFiles([...files, ...Array.from(e.target.files)]);
         }
@@ -21,7 +21,7 @@ const JobUpload = () => {
         setFiles(files.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (files.length === 0 || !jobDescription) {
             setStatus('Please provide a job description and at least one CV.');

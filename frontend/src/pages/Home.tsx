@@ -1,4 +1,4 @@
-import { ArrowRight, BrainCircuit, Users, Target, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Users, Target, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
