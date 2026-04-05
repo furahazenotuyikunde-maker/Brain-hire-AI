@@ -17,23 +17,31 @@ interface Job {
 const JobDetail = () => {
     const { id } = useParams<{ id: string }>();
     const [job, setJob] = useState<Job | null>(null);
+    const [applicants, setApplicants] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchJob = async () => {
+        const fetchData = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${id}`);
-                setJob(res.data);
+                const token = localStorage.getItem('token');
+                const [jobRes, cvRes] = await Promise.all([
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs/${id}`),
+                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cvs/job/${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                ]);
+                setJob(jobRes.data);
+                setApplicants(cvRes.data);
             } catch (err) {
-                console.error('Failed to fetch job');
+                console.error('Failed to fetch data');
             } finally {
                 setLoading(false);
             }
         };
-        fetchJob();
+        fetchData();
     }, [id]);
 
     const handleUpload = async () => {
@@ -131,6 +139,48 @@ const JobDetail = () => {
                             ))}
                         </div>
                     </motion.div>
+
+                    {/* Analyzed Candidates List */}
+                    {applicants.length > 0 && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="glass p-10 bg-white border-slate-200 space-y-10"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-3xl font-black text-slate-900 flex items-center gap-3 tracking-tighter">
+                                    <div className="w-1.5 h-8 bg-emerald-500 rounded-full"></div>
+                                    Analyzed Candidates
+                                </h2>
+                                <span className="bg-emerald-50 text-emerald-600 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest border border-emerald-100">
+                                    {applicants.length} Analyzed
+                                </span>
+                            </div>
+
+                            <div className="space-y-6">
+                                {applicants.map((cv, i) => (
+                                    <div key={i} className="p-8 bg-slate-50/50 border border-slate-100 rounded-2xl flex flex-col md:flex-row gap-8 items-start md:items-center justify-between group hover:bg-white hover:border-indigo-500/20 transition-all shadow-sm">
+                                        <div className="space-y-3 flex-1">
+                                            <div className="flex items-center gap-4">
+                                                <h4 className="text-2xl font-black text-slate-900 tracking-tight">{cv.candidateName || 'Anonymous Expert'}</h4>
+                                                <div className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${cv.score > 70 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                    {cv.score}% match
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-500 font-medium leading-relaxed">{cv.analysis?.reasoning}</p>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 md:max-w-[200px] justify-end">
+                                            {cv.analysis?.matchedKeywords?.slice(0, 3).map((k: string, j: number) => (
+                                                <span key={j} className="bg-white px-2 py-1 border border-slate-200 text-[10px] uppercase font-black tracking-tighter text-slate-400 rounded">
+                                                    {k}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
 
                 {/* Right Column: Profile Evaluation (Apply) */}

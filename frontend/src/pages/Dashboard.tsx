@@ -217,7 +217,7 @@ const Dashboard = () => {
                                         to={`/job/${job._id}`}
                                         className="btn btn-secondary border-indigo-200 text-indigo-600 font-black px-6 py-4 no-underline tracking-tighter uppercase text-xs hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-100/50"
                                     >
-                                        Inspect Role <ArrowUpRight size={18} className="ml-2" />
+                                        View Analysis & Role <ArrowUpRight size={18} className="ml-2" />
                                     </Link>
                                 </div>
                             </div>

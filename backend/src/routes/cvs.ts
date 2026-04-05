@@ -107,6 +107,16 @@ router.post('/upload', auth, upload.single('cv'), async (req: AuthRequest, res: 
   }
 });
 
+// GET CVs for a specific job
+router.get('/job/:id', auth, async (req: AuthRequest, res: Response) => {
+    try {
+        const cvs = await CV.find({ matchedJobId: req.params.id }).sort({ score: -1 });
+        res.json(cvs);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch job results' });
+    }
+});
+
 // GET user CVs
 router.get('/my-cvs', auth, async (req: AuthRequest, res: Response) => {
     try {
