@@ -33,21 +33,26 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`[AUTH] Login attempt for: ${email}`);
     
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`[AUTH] Login failed: User ${email} not found.`);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    console.log(`[AUTH] User found. Comparing password hashes...`);
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log(`[AUTH] Login failed: Password mismatch for ${email}.`);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    console.log(`[AUTH] Login successful for ${email}. Generating token...`);
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (err: any) {
-    console.error('Login Error:', err.message);
+    console.error('[AUTH] Login Error:', err.name, '-', err.message);
     res.status(500).json({ error: 'Server error during login. Check database connection.' });
   }
 });
