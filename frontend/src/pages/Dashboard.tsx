@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, Search, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2 } from 'lucide-react';
+import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, Search, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -53,6 +53,7 @@ const Dashboard = () => {
                     _id: j._id,
                     title: j.title,
                     description: j.description,
+                    location: j.location,
                     applicants: cvs.filter((c: any) => c.matchedJobId?._id === j._id || c.matchedJobId === j._id).length,
                     status: 'Active',
                     date: new Date(j.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
@@ -68,11 +69,6 @@ const Dashboard = () => {
 
         fetchDashboardData();
     }, [navigate]);
-
-    const handleApply = (jobId: string) => {
-        setUploadingJobId(jobId);
-        fileInputRef.current?.click();
-    };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -96,7 +92,7 @@ const Dashboard = () => {
             setTimeout(() => {
                 setUploadStatus(null);
                 setUploadingJobId(null);
-                window.location.reload(); // Refresh to update CV count
+                window.location.reload(); 
             }, 2000);
         } catch (err: any) {
             setUploadStatus('Failed to upload/analyze profile.');
@@ -112,7 +108,7 @@ const Dashboard = () => {
     );
 
     return (
-        <div className="pt-16 max-w-7xl mx-auto space-y-12 animate-fade-in pb-32">
+        <div className="pt-16 max-w-7xl mx-auto space-y-12 animate-fade-in pb-32 px-4">
             <header className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
                 <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-widest rounded-lg shadow-sm">
@@ -138,7 +134,7 @@ const Dashboard = () => {
                 </div>
             </header>
 
-            {/* Hidden File Input for Users */}
+            {/* Hidden File Input */}
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -179,14 +175,13 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-8">
-                {/* Active Jobs Table */}
                 <div className="lg:col-span-2 glass overflow-hidden border-slate-200 bg-white shadow-xl shadow-indigo-100/20">
                     <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                                 <Briefcase size={16} className="text-white" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Available Roles Profiles</h3>
+                            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Available Role Profiles</h3>
                         </div>
                     </div>
                     <div className="divide-y divide-slate-50">
@@ -199,66 +194,34 @@ const Dashboard = () => {
                                {user?.role === 'admin' && <button onClick={() => navigate('/upload')} className="btn btn-secondary border-indigo-200 text-indigo-600 font-bold px-8">Create First Role</button>}
                            </div>
                         ) : activeJobs.map((job, i) => (
-                            <div key={i} className="px-10 py-10 flex items-center justify-between group hover:bg-slate-50/80 transition-all cursor-pointer">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <h4 className="text-2xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors tracking-tight leading-none">{job.title}</h4>
-                                        <span className="bg-slate-100 text-slate-500 text-[10px] uppercase font-black tracking-widest px-2 py-1 rounded-md">ID: {job._id?.slice(-6)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-sm text-slate-500 font-bold">
+                            <div key={i} className="px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between group hover:bg-slate-50/80 transition-all cursor-pointer gap-6">
+                                <div className="space-y-4 flex-1">
+                                    <Link to={`/job/${job._id}`} className="block group/title no-underline decoration-transparent">
+                                        <div className="flex items-center gap-3">
+                                            <h4 className="text-2xl font-black text-slate-900 group-hover/title:text-indigo-600 transition-colors tracking-tight leading-none">{job.title}</h4>
+                                            <span className="bg-slate-100 text-slate-500 text-[10px] uppercase font-black tracking-widest px-2 py-1 rounded-md">ID: {job._id?.slice(-6)}</span>
+                                        </div>
+                                    </Link>
+                                    <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 font-bold">
                                         <span className="flex items-center gap-2 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg border border-indigo-100"><Users size={16}/> {job.applicants} Candidates</span>
+                                        <span className="flex items-center gap-2"><MapPin size={16}/> {job.location || 'Remote'}</span>
                                         <span className="flex items-center gap-2"><Calendar size={16}/> Initialized {job.date}</span>
                                     </div>
-                                    <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-[500px]">{job.description}</p>
+                                    <p className="text-slate-500 text-lg font-medium leading-relaxed line-clamp-2 max-w-[600px]">{job.description}</p>
                                 </div>
-                                <div className="flex items-center gap-8">
-                                    {user?.role === 'admin' ? (
-                                        <div className="flex items-center gap-4">
-                                            <span className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest border border-emerald-200 bg-emerald-50 text-emerald-600 shadow-sm">
-                                                {job.status}
-                                            </span>
-                                            <button className="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-100 transition-all">
-                                                <ArrowUpRight size={28}/>
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="p-10 space-y-8">
-                                            <Link to={`/job/${job._id}`} className="block group/title no-underline">
-                                                <h3 className="text-3xl font-black text-slate-900 group-hover/title:text-indigo-600 transition-colors leading-tight">
-                                                    {job.title}
-                                                </h3>
-                                            </Link>
-                                            
-                                            <div className="flex flex-wrap gap-4">
-                                                <span className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest pl-1">
-                                                    <MapPin size={14} /> {job.location || 'Remote Deployment'}
-                                                </span>
-                                            </div>
-
-                                            <p className="text-slate-500 font-medium line-clamp-3 leading-relaxed text-lg">
-                                                {job.description}
-                                            </p>
-
-                                            <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
-                                                <Link 
-                                                    to={`/job/${job._id}`}
-                                                    className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 no-underline"
-                                                >
-                                                    Evaluate Profile
-                                                </Link>
-                                                <Link to={`/job/${job._id}`} className="p-3 text-slate-300 hover:text-indigo-600 transition-colors">
-                                                    <Zap size={22} />
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    )}
+                                <div className="flex items-center gap-4">
+                                     <Link 
+                                        to={`/job/${job._id}`}
+                                        className="btn btn-secondary border-indigo-200 text-indigo-600 font-black px-6 py-4 no-underline tracking-tighter uppercase text-xs hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-100/50"
+                                    >
+                                        Inspect Role <ArrowUpRight size={18} className="ml-2" />
+                                    </Link>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Training & Analysis Section */}
                 <div className="space-y-8 h-full">
                     <div className="glass p-10 bg-indigo-600 border-indigo-500 space-y-8 flex flex-col h-full shadow-2xl shadow-indigo-200/50">
                         <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-black/10">
@@ -276,17 +239,14 @@ const Dashboard = () => {
                         </button>
                         <hr className="border-white/10" />
                         <div className="space-y-5 pt-4">
-                            <h4 className="text-xs font-black text-indigo-200 uppercase tracking-widest flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Ranking Subsystem Health
-                            </h4>
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-md flex items-center justify-between">
                                     <div className="space-y-1">
                                         <p className="text-xs text-indigo-200 font-bold uppercase tracking-tighter">Analysis Accuracy</p>
                                         <p className="text-3xl font-black text-white">96.4%</p>
                                     </div>
-                                    <div className="p-2 bg-emerald-500/20 rounded-lg">
-                                        <TrendingUp className="text-emerald-400" />
+                                    <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                                        <TrendingUp size={24} />
                                     </div>
                                 </div>
                             </div>

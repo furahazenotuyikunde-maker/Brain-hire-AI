@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Briefcase, MapPin, Building, Calendar, ArrowLeft, FileUp, ShieldCheck, Zap, Info, ChevronRight } from 'lucide-react';
+import { MapPin, Building, Calendar, ArrowLeft, FileUp, ShieldCheck, Zap, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
