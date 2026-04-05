@@ -7,10 +7,10 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: NODE_ENV
-        value: development
-      - key: SUPABASE_URL
+        value: production
+      - key: MONGODB_URI
         sync: false
-      - key: SUPABASE_KEY
+      - key: JWT_SECRET
         sync: false
     buildCommand: npm install && npm run build
     startCommand: npm start
