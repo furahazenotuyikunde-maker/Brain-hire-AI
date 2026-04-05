@@ -202,7 +202,7 @@ const Dashboard = () => {
                                     </div>
                                     <p className="text-slate-500 text-lg font-medium leading-relaxed line-clamp-2 max-w-[600px]">{job.description}</p>
                                 </div>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4 flex-shrink-0">
                                      <button 
                                         onClick={(e) => {
                                             e.stopPropagation();
