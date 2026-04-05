@@ -83,12 +83,9 @@ const Home = () => {
       {/* Proof Section */}
       <div className="mt-40 text-center space-y-16 max-w-4xl px-4">
          <h2 className="text-5xl font-black text-slate-800 tracking-tighter">Accelerating Talent Streams</h2>
-         <div className="flex flex-wrap items-center justify-center gap-x-20 gap-y-10 opacity-30 invert-[0.8] grayscale">
-             <img src="/vite.svg" alt="Partner" className="h-10" />
-             <img src="/react.svg" alt="Partner" className="h-10" />
-             <div className="text-2xl font-black text-slate-700 font-outfit uppercase tracking-widest">Global Neural</div>
-             <div className="text-2xl font-black text-slate-700 font-outfit uppercase tracking-widest">Talent Corp</div>
-             <img src="/favicon.svg" alt="Partner" className="h-10" />
+          <div className="flex flex-wrap items-center justify-center gap-x-20 gap-y-10">
+             <img src="/logo.png" alt="BrainHireAI Logo" className="h-20 grayscale hover:grayscale-0 transition-all opacity-80 hover:opacity-100" />
+             <div className="text-2xl font-black text-slate-700 font-outfit uppercase tracking-widest border-l border-slate-200 pl-8">Enterprise Ranking Protocol</div>
          </div>
       </div>
 

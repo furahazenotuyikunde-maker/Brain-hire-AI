@@ -48,6 +48,7 @@ app.get('/api/users', [auth, adminOnly], async (req: any, res: any) => {
 });
 
 app.get('/health', (_: express.Request, res: express.Response) => {
+  console.log('Health check Heartbeat received');
   res.json({ status: 'ok', message: 'BrainHireAI Backend is live with MongoDB.' });
 });
 
