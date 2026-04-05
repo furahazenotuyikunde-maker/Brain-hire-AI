@@ -203,6 +203,16 @@ const Dashboard = () => {
                                     <p className="text-slate-500 text-lg font-medium leading-relaxed line-clamp-2 max-w-[600px]">{job.description}</p>
                                 </div>
                                 <div className="flex items-center gap-4">
+                                     <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setUploadingJobId(job._id);
+                                            fileInputRef.current?.click();
+                                        }}
+                                        className="btn btn-secondary border-slate-200 text-slate-700 font-bold px-6 py-4 flex items-center gap-2 hover:bg-slate-100 transition-all"
+                                    >
+                                        <FileUp size={18} /> Quick Upload
+                                    </button>
                                      <Link 
                                         to={`/job/${job._id}`}
                                         className="btn btn-secondary border-indigo-200 text-indigo-600 font-black px-6 py-4 no-underline tracking-tighter uppercase text-xs hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-100/50"
