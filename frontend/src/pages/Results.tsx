@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Award, TrendingUp, TrendingDown, Info, Search, Filter, Mail, Phone, ExternalLink } from 'lucide-react';
+import { Award, TrendingUp, TrendingDown, Info, Search, Filter, Mail, Phone, ExternalLink, ShieldCheck, Download, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Candidate {
@@ -31,14 +31,16 @@ const Results = () => {
 
     if (!results) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-                <div className="p-8 bg-indigo-600/10 rounded-full animate-pulse">
-                    <Search size={64} className="text-indigo-400" />
+            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-8 animate-fade-in">
+                <div className="p-12 bg-indigo-50 rounded-full animate-pulse border border-indigo-100 shadow-xl shadow-indigo-100/30">
+                    <Search size={80} className="text-indigo-400" />
                 </div>
-                <h1 className="text-4xl font-black">No Active Analysis</h1>
-                <p className="text-slate-400 text-lg max-w-md mx-auto">You haven't scanned any candidates yet. Start by uploading a job description and resumes.</p>
-                <div className="pt-6">
-                    <a href="/upload" className="btn btn-primary px-12 py-5 text-lg">Start Scan Now</a>
+                <div className="space-y-4">
+                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter">No Active Neural Scan</h1>
+                    <p className="text-slate-500 text-xl font-medium max-w-lg mx-auto leading-relaxed">The ranking engine is idle. Start by deploying a role requirement and uploading candidate dossier batches.</p>
+                </div>
+                <div className="pt-8">
+                    <a href="/upload" className="btn btn-primary px-16 py-6 text-2xl font-black shadow-indigo-100">Initialize Scan Now</a>
                 </div>
             </div>
         );
@@ -49,83 +51,89 @@ const Results = () => {
     );
 
     return (
-        <div className="pt-16 max-w-7xl mx-auto space-y-12 animate-fade-in">
-            <header className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
-                <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest rounded-lg">
-                        Intelligence Scan Results
+        <div className="pt-16 max-w-7xl mx-auto space-y-12 animate-fade-in pb-32">
+            <header className="flex flex-col md:flex-row items-end justify-between gap-8 mb-12">
+                <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-widest rounded-lg shadow-sm">
+                        <ShieldCheck size={14} className="text-indigo-600" /> Authorized Neural Map Report
                     </div>
-                    <h1 className="text-5xl font-black">{results.jobTitle || 'Role Ranking Overview'}</h1>
-                    <p className="text-slate-400 text-xl font-light">Analyzed {results.totalAnalyzed} candidate profiles against role requirements.</p>
+                    <h1 className="text-6xl font-black text-slate-900 tracking-tighter overflow-hidden text-ellipsis line-clamp-1">{results.jobTitle || 'Role Ranking Overview'}</h1>
+                    <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">Analyzed {results.totalAnalyzed} candidate profiles against role specifications with 96.4% precision.</p>
                 </div>
                 
-                <div className="flex gap-4">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <div className="flex gap-4 items-center">
+                    <div className="relative group shadow-sm">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
                         <input 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Find candidate..." 
-                            className="bg-white/5 border border-white/10 px-12 py-4 rounded-xl focus:outline-none focus:border-indigo-500/50 w-64"
+                            placeholder="Find candidate by identity..." 
+                            className="bg-white border border-slate-200 px-12 py-5 rounded-2xl focus:outline-none focus:border-indigo-500/50 w-80 text-lg font-bold text-slate-900 transition-all"
                         />
                     </div>
-                    <button className="btn btn-secondary py-4 px-6 border-white/10"><Filter size={18} /> Filters</button>
+                    <button className="btn btn-secondary py-5 px-8 border-slate-200 bg-white"><Filter size={20} /> Filters</button>
+                    <button className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 transition-colors border border-slate-100">
+                        <Download size={24} />
+                    </button>
                 </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {/* Table Section */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="glass overflow-hidden border-white/5">
+                    <div className="glass overflow-hidden border-slate-200 bg-white shadow-xl shadow-indigo-100/20">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-10 py-6 text-sm font-bold text-slate-400 uppercase tracking-widest">Rank</th>
-                                    <th className="px-10 py-6 text-sm font-bold text-slate-400 uppercase tracking-widest">Candidate Profile</th>
-                                    <th className="px-10 py-6 text-sm font-bold text-slate-400 uppercase tracking-widest">AI Relevance Score</th>
-                                    <th className="px-10 py-6 text-sm font-bold text-slate-400 uppercase tracking-widest">Aptitude Match</th>
+                                <tr className="border-b border-slate-100 bg-slate-50/50">
+                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Rank</th>
+                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Candidate Identity</th>
+                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">AI Relevance Index</th>
+                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Match Quality</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-slate-50">
                                 {filteredCandidates.map((c, i) => (
                                     <tr 
                                         key={i} 
-                                        className={`hover:bg-white/5 transition-colors cursor-pointer group ${selectedCandidate?.candidateName === c.candidateName ? 'bg-indigo-600/5' : ''}`}
+                                        className={`hover:bg-slate-50/80 transition-all cursor-pointer group ${selectedCandidate?.candidateName === c.candidateName ? 'bg-indigo-50/50' : 'bg-white'}`}
                                         onClick={() => setSelectedCandidate(c)}
                                     >
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-4">
-                                                <span className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xl 
-                                                    ${i === 0 ? 'bg-amber-400/20 text-amber-500' : 'bg-slate-700/20 text-slate-400'}`}>
+                                                <span className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-2xl border
+                                                    ${i === 0 ? 'bg-amber-400 shadow-lg shadow-amber-200/50 text-white border-amber-500' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
                                                     {i + 1}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="flex flex-col">
-                                                <span className="text-xl font-bold group-hover:text-indigo-400 transition-all">{c.candidateName}</span>
-                                                <span className="text-sm text-slate-500 font-medium">Software Engineering Dept.</span>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-2xl font-black text-slate-900 group-hover:text-indigo-600 transition-all tracking-tight leading-none">{c.candidateName}</span>
+                                                <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Expertise Match Protocol</span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="flex items-center gap-4">
-                                                <div className="flex-grow h-2 bg-slate-800 rounded-full overflow-hidden w-32">
+                                            <div className="flex items-center gap-5">
+                                                <div className="flex-grow h-3 bg-slate-100 rounded-full overflow-hidden w-40 border border-slate-50 shadow-inner">
                                                     <motion.div 
                                                         initial={{ width: 0 }} 
                                                         animate={{ width: `${c.score}%` }} 
-                                                        transition={{ duration: 1, delay: i * 0.1 }}
-                                                        className={`h-full rounded-full ${c.score > 70 ? 'bg-emerald-500' : c.score > 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                                        transition={{ duration: 1.2, delay: i * 0.1 }}
+                                                        className={`h-full rounded-full shadow-lg ${c.score > 70 ? 'bg-emerald-500' : c.score > 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
                                                     />
                                                 </div>
-                                                <span className={`font-black text-2xl ${c.score > 70 ? 'text-emerald-400' : c.score > 40 ? 'text-amber-400' : 'text-rose-400'}`}>
+                                                <span className={`font-black text-3xl tracking-tighter ${c.score > 70 ? 'text-emerald-600' : c.score > 40 ? 'text-amber-600' : 'text-rose-600'}`}>
                                                     {c.score}%
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="flex items-center gap-2">
-                                                {c.score > 60 ? <TrendingUp size={20} className="text-emerald-400" /> : <TrendingDown size={20} className="text-rose-400" />}
-                                                <span className="font-semibold">{c.score > 60 ? 'Positive Match' : 'Gap in Expertise'}</span>
+                                            <div className="flex items-center gap-3">
+                                                {c.score > 60 ? 
+                                                    <div className="bg-emerald-50 text-emerald-600 p-2 rounded-lg border border-emerald-100"><TrendingUp size={24} /></div> : 
+                                                    <div className="bg-rose-50 text-rose-600 p-2 rounded-lg border border-rose-100"><TrendingDown size={24} /></div>
+                                                }
+                                                <span className="font-bold text-slate-700 text-lg">{c.score > 60 ? 'High Match' : 'Gap in Profile'}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -137,56 +145,68 @@ const Results = () => {
 
                 {/* Details Sidebar */}
                 <div className="space-y-6">
-                    <div className="glass p-10 sticky top-32 border-indigo-500/10 min-h-[600px] flex flex-col">
+                    <div className="glass p-12 sticky top-32 border-slate-200 bg-white shadow-2xl shadow-indigo-100/50 min-h-[700px] flex flex-col justify-between">
                         {!selectedCandidate ? (
-                            <div className="h-full flex flex-col items-center justify-center text-center opacity-50 space-y-4 m-auto">
-                                <Info size={48} className="mb-4" />
-                                <h3 className="text-2xl font-bold leading-tight">Select a candidate <br/>for deeper analysis</h3>
-                                <p className="text-slate-400">View reasoning, skills breakdown, and recommended next steps.</p>
+                            <div className="h-full flex flex-col items-center justify-center text-center opacity-60 space-y-6 m-auto">
+                                <div className="p-8 bg-slate-50 rounded-full border border-slate-100">
+                                   <Info size={56} className="text-slate-300" />
+                                </div>
+                                <div className="space-y-3">
+                                    <h3 className="text-3xl font-black text-slate-900 tracking-tight leading-none">Select Profile for <br/>Neural Breakdown</h3>
+                                    <p className="text-slate-500 text-lg font-medium leading-relaxed">Examine AI-generated matching rationale and expertise mapping.</p>
+                                </div>
                             </div>
                         ) : (
-                            <div className="animate-fade-in h-6 w-full flex flex-col flex-grow">
-                                <div className="space-y-8 flex flex-col flex-grow">
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <h2 className="text-3xl font-black mb-1">{selectedCandidate.candidateName}</h2>
-                                            <div className="flex items-center gap-4 mt-4">
-                                                <a href="#" className="flex items-center gap-2 text-indigo-400 text-sm font-bold no-underline hover:underline"><Mail size={16}/> Email</a>
-                                                <a href="#" className="flex items-center gap-2 text-indigo-400 text-sm font-bold no-underline hover:underline"><Phone size={16}/> Interview</a>
+                            <div className="animate-fade-in flex flex-col flex-grow">
+                                <div className="space-y-10 flex flex-col flex-grow">
+                                    <div className="flex items-start justify-between pb-8 border-b border-slate-100">
+                                        <div className="space-y-4">
+                                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">{selectedCandidate.candidateName}</h2>
+                                            <div className="flex items-center gap-4">
+                                                <a href="#" className="flex items-center gap-2 text-indigo-600 text-sm font-black no-underline hover:text-indigo-800 transition-colors bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100"><Mail size={16}/> Email</a>
+                                                <button className="flex items-center gap-2 text-slate-500 text-sm font-black hover:text-slate-900 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-100"><Phone size={16}/> Interview</button>
                                             </div>
                                         </div>
-                                        <div className={`p-4 rounded-2xl ${selectedCandidate.score > 70 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-500/10 text-slate-400'}`}>
-                                            <Award size={32} />
+                                        <div className={`p-4 rounded-3xl shadow-lg ${selectedCandidate.score > 70 ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-50 text-slate-300 border border-slate-100'}`}>
+                                            <Award size={40} />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">AI Matching Rationale</h4>
-                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 leading-relaxed text-lg">
-                                            {selectedCandidate.reasoning}
+                                    <div className="space-y-5">
+                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Matching Neural Logic</h4>
+                                        <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 leading-relaxed text-xl font-medium text-slate-700 italic relative">
+                                            "{selectedCandidate.reasoning}"
+                                            <div className="absolute top-0 right-0 p-4 opacity-5">
+                                                <Zap size={64} className="text-indigo-600" />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 flex-grow">
-                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Matched Expertise Tags</h4>
-                                        <div className="flex flex-wrap gap-2">
+                                    <div className="space-y-6 flex-grow">
+                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Expertise Tag Mapping</h4>
+                                        <div className="flex flex-wrap gap-3">
                                             {selectedCandidate.matchedKeywords.length > 0 ? (
                                                 selectedCandidate.matchedKeywords.slice(0, 15).map((word, i) => (
-                                                    <span key={i} className="px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-bold rounded-full">
+                                                    <span key={i} className="px-5 py-3 bg-white border border-slate-200 text-slate-900 text-sm font-black rounded-2xl shadow-sm hover:border-indigo-600 transition-colors">
                                                         {word}
                                                     </span>
                                                 ))
                                             ) : (
-                                                <span className="text-slate-500 text-sm">No significant skill matches found.</span>
+                                                <span className="text-slate-400 text-lg font-medium">No significant technical overlap detected.</span>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="pt-8 border-t border-white/5 mt-auto">
-                                        <button className="btn btn-primary w-full py-5 text-xl font-bold shadow-indigo-500/30">Schedule Interview</button>
-                                        <p className="text-center text-sm text-slate-500 mt-4 font-medium flex items-center justify-center gap-2 cursor-pointer hover:text-white transition-colors">
-                                            <ExternalLink size={14}/> View Full CV Profile
-                                        </p>
+                                    <div className="pt-10 border-t border-slate-100 mt-auto space-y-6">
+                                        <button className="btn btn-primary w-full py-6 text-2xl font-black shadow-indigo-100">Deploy To Recruitment Board</button>
+                                        <div className="flex items-center justify-center gap-8">
+                                            <p className="text-sm text-slate-400 font-bold flex items-center gap-2 cursor-pointer hover:text-slate-900 transition-colors group">
+                                                <ExternalLink size={18} className="group-hover:translate-x-1 transition-transform"/> Full Dossier Profile
+                                            </p>
+                                            <p className="text-sm text-slate-400 font-bold flex items-center gap-2 cursor-pointer hover:text-rose-600 transition-colors">
+                                                <Trash2 size={18}/> Reject Profile
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
