@@ -23,8 +23,9 @@ router.post('/signup', async (req, res) => {
     
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error during signup' });
+  } catch (err: any) {
+    console.error('Signup Error:', err.message);
+    res.status(500).json({ error: 'Server error during signup. Check database connection.' });
   }
 });
 
@@ -45,8 +46,9 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error during login' });
+  } catch (err: any) {
+    console.error('Login Error:', err.message);
+    res.status(500).json({ error: 'Server error during login. Check database connection.' });
   }
 });
 

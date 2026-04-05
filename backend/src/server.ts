@@ -17,9 +17,17 @@ const port = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/brainhire';
 
 // Connect to MongoDB
+const uriMasked = MONGODB_URI.substring(0, 15) + '...';
+console.log(`Connecting to database at: ${uriMasked}`);
+
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .then(() => {
+    console.log('✅ Success: Connected to MongoDB Atlas');
+  })
+  .catch((err) => {
+    console.error('❌ CRITICAL: MongoDB connection failed:', err.message);
+    // On Render, we should let it try to restart
+  });
 
 app.use(cors());
 app.use(express.json());
