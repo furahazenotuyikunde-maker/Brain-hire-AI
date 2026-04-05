@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileUp, ShieldCheck, LogOut, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, FileUp, ShieldCheck, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, MoreVertical, Search, ArrowUpRight, ShieldCheck, Mail, Info, FileUp, Plus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, Search, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -86,7 +86,7 @@ const Dashboard = () => {
         formData.append('jobId', uploadingJobId);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cvs/upload`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cvs/upload`, formData, {
                 headers: { 
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`

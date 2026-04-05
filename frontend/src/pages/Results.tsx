@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Award, TrendingUp, Search, Filter, Info, Mail, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Award, Search, Filter, ExternalLink, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Candidate {
