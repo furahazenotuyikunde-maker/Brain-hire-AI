@@ -6,6 +6,7 @@ import JobUpload from './pages/JobUpload';
 import Results from './pages/Results';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import JobDetail from './pages/JobDetail';
 
 // Admin Panel Mock Component (Until we build the full one)
 const Admin = () => {
@@ -53,6 +54,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/upload" element={<JobUpload />} />
+          <Route path="/job/:id" element={<JobDetail />} />
           <Route path="/results" element={<Results />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>

@@ -222,12 +222,35 @@ const Dashboard = () => {
                                             </button>
                                         </div>
                                     ) : (
-                                        <button 
-                                            onClick={() => handleApply(job._id)}
-                                            className="btn btn-secondary px-8 py-5 border-indigo-200 text-indigo-600 font-black tracking-tighter uppercase text-sm hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-100/50"
-                                        >
-                                            Upload Dossier <FileUp size={18} className="ml-2" />
-                                        </button>
+                                        <div className="p-10 space-y-8">
+                                            <Link to={`/job/${job._id}`} className="block group/title no-underline">
+                                                <h3 className="text-3xl font-black text-slate-900 group-hover/title:text-indigo-600 transition-colors leading-tight">
+                                                    {job.title}
+                                                </h3>
+                                            </Link>
+                                            
+                                            <div className="flex flex-wrap gap-4">
+                                                <span className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest pl-1">
+                                                    <MapPin size={14} /> {job.location || 'Remote Deployment'}
+                                                </span>
+                                            </div>
+
+                                            <p className="text-slate-500 font-medium line-clamp-3 leading-relaxed text-lg">
+                                                {job.description}
+                                            </p>
+
+                                            <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                                                <Link 
+                                                    to={`/job/${job._id}`}
+                                                    className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 no-underline"
+                                                >
+                                                    Evaluate Profile
+                                                </Link>
+                                                <Link to={`/job/${job._id}`} className="p-3 text-slate-300 hover:text-indigo-600 transition-colors">
+                                                    <Zap size={22} />
+                                                </Link>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             </div>
