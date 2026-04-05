@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, Search, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2, MapPin } from 'lucide-react';
+import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
@@ -118,19 +118,12 @@ const Dashboard = () => {
                     <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">System-wide performance overview for {user?.name}.</p>
                 </div>
                 <div className="flex gap-4">
-                     {user?.role === 'admin' ? (
-                        <button 
+                    <button 
                          onClick={() => navigate('/upload')} 
                          className="btn btn-primary px-8 py-5 text-lg font-bold shadow-indigo-100 group"
                        >
                            Initialize New Role <Plus size={20} className="ml-2 group-hover:rotate-90 transition-transform"/>
-                       </button>
-                     ) : (
-                        <div className="flex items-center gap-3 bg-indigo-50 px-6 py-4 rounded-2xl border border-indigo-100">
-                             <Zap size={20} className="text-indigo-600" />
-                             <span className="font-black text-indigo-700 tracking-tighter uppercase text-xs">Standard User Mode</span>
-                        </div>
-                     )}
+                    </button>
                 </div>
             </header>
 
@@ -191,7 +184,7 @@ const Dashboard = () => {
                                    <Info size={32} className="text-slate-300" />
                                </div>
                                <p className="text-slate-400 font-medium text-lg">No active organizational roles detected.</p>
-                               {user?.role === 'admin' && <button onClick={() => navigate('/upload')} className="btn btn-secondary border-indigo-200 text-indigo-600 font-bold px-8">Create First Role</button>}
+                               <button onClick={() => navigate('/upload')} className="btn btn-secondary border-indigo-200 text-indigo-600 font-bold px-8">Create First Role</button>
                            </div>
                         ) : activeJobs.map((job, i) => (
                             <div key={i} className="px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between group hover:bg-slate-50/80 transition-all cursor-pointer gap-6">
@@ -233,9 +226,9 @@ const Dashboard = () => {
                         </div>
                         <button 
                             className="bg-white text-indigo-600 w-full py-5 text-xl font-black rounded-2xl shadow-lg shadow-black/10 hover:bg-indigo-50 transition-colors uppercase tracking-widest flex items-center justify-center gap-3"
-                            onClick={() => user?.role === 'admin' ? navigate('/upload') : navigate('/results')}
+                            onClick={() => navigate('/upload')}
                         >
-                            {user?.role === 'admin' ? <><FileUp size={24} /> Neural Scan</> : <><Search size={24} /> View Results</>}
+                            <FileUp size={24} /> Neural Scan
                         </button>
                         <hr className="border-white/10" />
                         <div className="space-y-5 pt-4">

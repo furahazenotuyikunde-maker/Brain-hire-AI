@@ -14,8 +14,8 @@ router.get('/', async (_: AuthRequest, res: Response) => {
   }
 });
 
-// POST new job (admin)
-router.post('/', [auth, adminOnly], async (req: AuthRequest, res: Response) => {
+// POST new job (any authenticated user for analysis)
+router.post('/', [auth], async (req: AuthRequest, res: Response) => {
   try {
     const { title, description, skills, qualifications } = req.body;
     const job = new Job({ title, description, skills, qualifications });
