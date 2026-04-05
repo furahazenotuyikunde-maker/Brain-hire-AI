@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, LogIn, AlertCircle, ShieldAlert } from 'lucide-react';
 import axios from 'axios';
+import logo from '../assets/logo.png';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -33,6 +34,7 @@ const Login = () => {
         <div className="pt-24 flex flex-col items-center justify-center animate-fade-in max-w-lg mx-auto">
             <div className="w-full glass p-12 border-slate-200 bg-white/70 shadow-xl shadow-indigo-100/30">
                 <div className="space-y-4 mb-10 text-center">
+                    <img src={logo} alt="BrainHireAI" className="h-20 w-auto mx-auto mb-6 drop-shadow-xl" />
                     <h1 className="text-4xl font-black tracking-tight">Intelligence Log-In</h1>
                     <p className="text-slate-500 font-medium leading-relaxed">Secure access to the BrainHireAI Ranking engine.</p>
                 </div>

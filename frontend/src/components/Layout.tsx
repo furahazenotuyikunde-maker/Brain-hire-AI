@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FileUp, ShieldCheck, LogOut } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const Navbar = () => {
   const location = useLocation();
@@ -26,7 +27,7 @@ const Navbar = () => {
   return (
     <nav className="glass sticky top-4 mx-4 z-50 flex items-center justify-between px-8 py-4 my-4 border-slate-200">
       <Link to="/" className="flex items-center gap-3 no-underline">
-        <img src="/logo.png" alt="BrainHireAI" className="h-10 w-auto" />
+        <img src={logo} alt="BrainHireAI" className="h-10 w-auto" />
       </Link>
 
       <div className="flex items-center gap-6">
