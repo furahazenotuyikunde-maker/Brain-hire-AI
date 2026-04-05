@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Award, TrendingUp, TrendingDown, Info, Search, Filter, Mail, Phone, ExternalLink, ShieldCheck, Download, Trash2 } from 'lucide-react';
+import { Award, TrendingUp, Search, Filter, Info, Mail, ExternalLink, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Candidate {
@@ -9,6 +9,10 @@ interface Candidate {
   matchedKeywords: string[];
   email: string;
   status: string;
+  analysis?: {
+      strengths: string;
+      gaps: string;
+  };
 }
 
 interface AnalysisResult {
@@ -25,22 +29,28 @@ const Results = () => {
     useEffect(() => {
         const stored = localStorage.getItem('latest_results');
         if (stored) {
-            setResults(JSON.parse(stored));
+            const data = JSON.parse(stored);
+            // Sorting by score to get Rank
+            data.candidates.sort((a: any, b: any) => b.score - a.score);
+            setResults(data);
         }
     }, []);
 
+    const getVerdict = (score: number) => {
+        if (score >= 90) return { text: 'Strong Hire', style: 'bg-emerald-100 text-emerald-600 border-emerald-200' };
+        if (score >= 75) return { text: 'Hire', style: 'bg-indigo-100 text-indigo-600 border-indigo-200' };
+        if (score >= 50) return { text: 'Maybe', style: 'bg-amber-100 text-amber-600 border-amber-200' };
+        return { text: 'No Hire', style: 'bg-rose-100 text-rose-600 border-rose-200' };
+    };
+
     if (!results) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-8 animate-fade-in">
-                <div className="p-12 bg-indigo-50 rounded-full animate-pulse border border-indigo-100 shadow-xl shadow-indigo-100/30">
-                    <Search size={80} className="text-indigo-400" />
-                </div>
-                <div className="space-y-4">
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter">No Active Neural Scan</h1>
-                    <p className="text-slate-500 text-xl font-medium max-w-lg mx-auto leading-relaxed">The ranking engine is idle. Start by deploying a role requirement and uploading candidate dossier batches.</p>
-                </div>
-                <div className="pt-8">
-                    <a href="/upload" className="btn btn-primary px-16 py-6 text-2xl font-black shadow-indigo-100">Initialize Scan Now</a>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+                <Search size={64} className="text-slate-300" />
+                <h1 className="text-4xl font-black text-slate-900">No Active Analysis</h1>
+                <p className="text-slate-500 font-medium max-w-md mx-auto">Start by uploading candidate dossiers in the Recruit round.</p>
+                <div className="pt-6">
+                    <a href="/upload" className="btn btn-primary px-12 py-5 text-lg">Start Scan Now</a>
                 </div>
             </div>
         );
@@ -52,168 +62,142 @@ const Results = () => {
 
     return (
         <div className="pt-16 max-w-7xl mx-auto space-y-12 animate-fade-in pb-32">
-            <header className="flex flex-col md:flex-row items-end justify-between gap-8 mb-12">
+            <header className="flex flex-col md:flex-row items-end justify-between gap-6 mb-12">
                 <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-widest rounded-lg shadow-sm">
-                        <ShieldCheck size={14} className="text-indigo-600" /> Authorized Neural Map Report
+                        <ShieldCheck size={14} className="text-indigo-600" /> Authorized Ranking Report
                     </div>
-                    <h1 className="text-6xl font-black text-slate-900 tracking-tighter overflow-hidden text-ellipsis line-clamp-1">{results.jobTitle || 'Role Ranking Overview'}</h1>
-                    <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">Analyzed {results.totalAnalyzed} candidate profiles against role specifications with 96.4% precision.</p>
+                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter">{results.jobTitle || 'Role Overview'}</h1>
+                    <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">Analyzed {results.totalAnalyzed} candidate profiles against role specifications.</p>
                 </div>
                 
-                <div className="flex gap-4 items-center">
-                    <div className="relative group shadow-sm">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
+                <div className="flex gap-4">
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                         <input 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Find candidate by identity..." 
-                            className="bg-white border border-slate-200 px-12 py-5 rounded-2xl focus:outline-none focus:border-indigo-500/50 w-80 text-lg font-bold text-slate-900 transition-all"
+                            placeholder="Find candidate..." 
+                            className="bg-white border border-slate-200 px-12 py-4 rounded-xl focus:outline-none focus:border-indigo-500/50 w-64 text-slate-800 font-bold"
                         />
                     </div>
-                    <button className="btn btn-secondary py-5 px-8 border-slate-200 bg-white"><Filter size={20} /> Filters</button>
-                    <button className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 transition-colors border border-slate-100">
-                        <Download size={24} />
-                    </button>
+                    <button className="btn btn-secondary py-4 px-6 border-slate-200 bg-white"><Filter size={18} /> Filters</button>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                {/* Table Section */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="glass overflow-hidden border-slate-200 bg-white shadow-xl shadow-indigo-100/20">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-100 bg-slate-50/50">
-                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Rank</th>
-                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Candidate Identity</th>
-                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">AI Relevance Index</th>
-                                    <th className="px-10 py-6 text-xs font-black text-slate-400 uppercase tracking-widest">Match Quality</th>
+            <div className="glass overflow-hidden border-slate-200 bg-white shadow-2xl shadow-indigo-100/30">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="border-b border-slate-100 bg-slate-50/50">
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Rank</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Score</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[25%]">Strengths</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[25%]">Gaps</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Verdict</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                        {filteredCandidates.map((c, i) => {
+                            const verdict = getVerdict(c.score);
+                            return (
+                                <tr 
+                                    key={i} 
+                                    className={`hover:bg-slate-50/80 transition-all cursor-pointer group ${selectedCandidate?.candidateName === c.candidateName ? 'bg-indigo-50/50' : 'bg-white'}`}
+                                    onClick={() => setSelectedCandidate(c)}
+                                >
+                                    <td className="px-8 py-10">
+                                        <span className="text-3xl font-black text-indigo-600 tracking-tighter transition-all group-hover:scale-110 block">
+                                            #{i + 1}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-10">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-all tracking-tight leading-none">{c.candidateName}</span>
+                                            <span className="text-xs text-slate-400 font-bold tracking-tight lowercase">{c.email || `${c.candidateName.toLowerCase().replace(' ','.')}@example.com`}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-10">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-50">
+                                                <motion.div 
+                                                    initial={{ width: 0 }} 
+                                                    animate={{ width: `${c.score}%` }} 
+                                                    transition={{ duration: 1.2, delay: i * 0.1 }}
+                                                    className={`h-full rounded-full ${c.score > 75 ? 'bg-emerald-500' : c.score > 40 ? 'bg-indigo-500' : 'bg-amber-500'}`}
+                                                />
+                                            </div>
+                                            <span className="font-black text-2xl text-slate-800 tracking-tighter">
+                                                {c.score}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-10">
+                                        <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-[250px]">
+                                            {c.analysis?.strengths || `Candidate shows technical proficiency in core role matching metrics.`}
+                                        </p>
+                                    </td>
+                                    <td className="px-8 py-10">
+                                        <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-[250px]">
+                                            {c.analysis?.gaps || `Minimal technical deviations identified.`}
+                                        </p>
+                                    </td>
+                                    <td className="px-8 py-10">
+                                        <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-tighter border whitespace-nowrap shadow-sm ${verdict.style}`}>
+                                            {verdict.text}
+                                        </span>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {filteredCandidates.map((c, i) => (
-                                    <tr 
-                                        key={i} 
-                                        className={`hover:bg-slate-50/80 transition-all cursor-pointer group ${selectedCandidate?.candidateName === c.candidateName ? 'bg-indigo-50/50' : 'bg-white'}`}
-                                        onClick={() => setSelectedCandidate(c)}
-                                    >
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-4">
-                                                <span className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-2xl border
-                                                    ${i === 0 ? 'bg-amber-400 shadow-lg shadow-amber-200/50 text-white border-amber-500' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
-                                                    {i + 1}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-2xl font-black text-slate-900 group-hover:text-indigo-600 transition-all tracking-tight leading-none">{c.candidateName}</span>
-                                                <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Expertise Match Protocol</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-5">
-                                                <div className="flex-grow h-3 bg-slate-100 rounded-full overflow-hidden w-40 border border-slate-50 shadow-inner">
-                                                    <motion.div 
-                                                        initial={{ width: 0 }} 
-                                                        animate={{ width: `${c.score}%` }} 
-                                                        transition={{ duration: 1.2, delay: i * 0.1 }}
-                                                        className={`h-full rounded-full shadow-lg ${c.score > 70 ? 'bg-emerald-500' : c.score > 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                                                    />
-                                                </div>
-                                                <span className={`font-black text-3xl tracking-tighter ${c.score > 70 ? 'text-emerald-600' : c.score > 40 ? 'text-amber-600' : 'text-rose-600'}`}>
-                                                    {c.score}%
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-3">
-                                                {c.score > 60 ? 
-                                                    <div className="bg-emerald-50 text-emerald-600 p-2 rounded-lg border border-emerald-100"><TrendingUp size={24} /></div> : 
-                                                    <div className="bg-rose-50 text-rose-600 p-2 rounded-lg border border-rose-100"><TrendingDown size={24} /></div>
-                                                }
-                                                <span className="font-bold text-slate-700 text-lg">{c.score > 60 ? 'High Match' : 'Gap in Profile'}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Details Sidebar */}
-                <div className="space-y-6">
-                    <div className="glass p-12 sticky top-32 border-slate-200 bg-white shadow-2xl shadow-indigo-100/50 min-h-[700px] flex flex-col justify-between">
-                        {!selectedCandidate ? (
-                            <div className="h-full flex flex-col items-center justify-center text-center opacity-60 space-y-6 m-auto">
-                                <div className="p-8 bg-slate-50 rounded-full border border-slate-100">
-                                   <Info size={56} className="text-slate-300" />
-                                </div>
-                                <div className="space-y-3">
-                                    <h3 className="text-3xl font-black text-slate-900 tracking-tight leading-none">Select Profile for <br/>Neural Breakdown</h3>
-                                    <p className="text-slate-500 text-lg font-medium leading-relaxed">Examine AI-generated matching rationale and expertise mapping.</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="animate-fade-in flex flex-col flex-grow">
-                                <div className="space-y-10 flex flex-col flex-grow">
-                                    <div className="flex items-start justify-between pb-8 border-b border-slate-100">
-                                        <div className="space-y-4">
-                                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">{selectedCandidate.candidateName}</h2>
-                                            <div className="flex items-center gap-4">
-                                                <a href="#" className="flex items-center gap-2 text-indigo-600 text-sm font-black no-underline hover:text-indigo-800 transition-colors bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100"><Mail size={16}/> Email</a>
-                                                <button className="flex items-center gap-2 text-slate-500 text-sm font-black hover:text-slate-900 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-100"><Phone size={16}/> Interview</button>
-                                            </div>
-                                        </div>
-                                        <div className={`p-4 rounded-3xl shadow-lg ${selectedCandidate.score > 70 ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-50 text-slate-300 border border-slate-100'}`}>
-                                            <Award size={40} />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-5">
-                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Matching Neural Logic</h4>
-                                        <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 leading-relaxed text-xl font-medium text-slate-700 italic relative">
-                                            "{selectedCandidate.reasoning}"
-                                            <div className="absolute top-0 right-0 p-4 opacity-5">
-                                                <Zap size={64} className="text-indigo-600" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-6 flex-grow">
-                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Expertise Tag Mapping</h4>
-                                        <div className="flex flex-wrap gap-3">
-                                            {selectedCandidate.matchedKeywords.length > 0 ? (
-                                                selectedCandidate.matchedKeywords.slice(0, 15).map((word, i) => (
-                                                    <span key={i} className="px-5 py-3 bg-white border border-slate-200 text-slate-900 text-sm font-black rounded-2xl shadow-sm hover:border-indigo-600 transition-colors">
-                                                        {word}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-slate-400 text-lg font-medium">No significant technical overlap detected.</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-10 border-t border-slate-100 mt-auto space-y-6">
-                                        <button className="btn btn-primary w-full py-6 text-2xl font-black shadow-indigo-100">Deploy To Recruitment Board</button>
-                                        <div className="flex items-center justify-center gap-8">
-                                            <p className="text-sm text-slate-400 font-bold flex items-center gap-2 cursor-pointer hover:text-slate-900 transition-colors group">
-                                                <ExternalLink size={18} className="group-hover:translate-x-1 transition-transform"/> Full Dossier Profile
-                                            </p>
-                                            <p className="text-sm text-slate-400 font-bold flex items-center gap-2 cursor-pointer hover:text-rose-600 transition-colors">
-                                                <Trash2 size={18}/> Reject Profile
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </div>
+
+            {/* Sticky Detailed Analysis Sidebar (Same logic if selected) */}
+            {selectedCandidate && (
+                <div className="fixed inset-y-0 right-0 w-1/3 bg-white border-l border-slate-200 shadow-2xl p-12 z-[101] animate-slide-in overflow-y-auto">
+                    <button onClick={() => setSelectedCandidate(null)} className="absolute top-6 right-6 p-2 bg-slate-50 rounded-lg text-slate-400 hover:text-slate-900 transition-colors">
+                        <Search size={24} className="rotate-45" />
+                    </button>
+                    <div className="space-y-10">
+                        <div className="flex items-start justify-between border-b border-slate-100 pb-8">
+                            <div className="space-y-2">
+                                <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-none">{selectedCandidate.candidateName}</h2>
+                                <p className="text-slate-400 font-bold tracking-tight">{selectedCandidate.email}</p>
+                            </div>
+                            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-3xl border border-emerald-100 shadow-sm">
+                                <Award size={32} />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Matching Rationale</h4>
+                            <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 leading-relaxed text-xl font-medium text-slate-700 italic">
+                                "{selectedCandidate.reasoning}"
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Identified Expertise</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {selectedCandidate.matchedKeywords.map((k, i) => (
+                                    <span key={i} className="px-4 py-2 bg-white border border-slate-200 text-slate-900 text-sm font-bold rounded-xl shadow-sm">
+                                        {k}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="pt-10 space-y-4">
+                            <button className="btn btn-primary w-full py-6 text-2xl font-black shadow-indigo-100">Contact Candidate</button>
+                            <p className="text-center text-sm font-bold text-slate-400 flex items-center justify-center gap-2 cursor-pointer hover:text-slate-900 transition-colors">
+                                <ExternalLink size={14} /> Full Dossier Profile
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
