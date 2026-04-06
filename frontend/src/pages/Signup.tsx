@@ -27,8 +27,13 @@ const Signup = () => {
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data.user));
             navigate('/dashboard');
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Registration failed. Please try again.');
+        } catch (error) {
+            const message = axios.isAxiosError(error)
+                ? error.response?.data?.error || error.message
+                : error instanceof Error
+                ? error.message
+                : 'Registration failed. Please try again.';
+            setError(message);
         } finally {
             setLoading(false);
         }

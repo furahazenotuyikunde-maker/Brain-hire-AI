@@ -1,19 +1,57 @@
 import { useEffect, useState, useRef } from 'react';
 import { Users, FileUser, Briefcase, TrendingUp, Calendar, Zap, ArrowUpRight, ShieldCheck, Info, FileUp, Plus, CheckCircle2, MapPin } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
+interface UserData {
+    name: string;
+    role: 'admin' | 'user';
+}
+
+interface CVItem {
+    status?: string;
+    score?: number;
+    matchedJobId?: { _id: string } | string;
+}
+
+interface JobData {
+    _id: string;
+    title: string;
+    description: string;
+    location?: string;
+    createdAt: string;
+}
+
+interface ActiveJob {
+    _id: string;
+    title: string;
+    description: string;
+    location?: string;
+    applicants: number;
+    status: string;
+    date: string;
+}
+
+interface Stat {
+    label: string;
+    value: string;
+    icon: LucideIcon;
+    color: string;
+    bg: string;
+}
+
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [stats, setStats] = useState([
+    const [stats, setStats] = useState<Stat[]>([
         { label: 'Total Applicants', value: '0', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
         { label: 'Active Jobs', value: '0', icon: Briefcase, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
         { label: 'AI Scans Run', value: '0', icon: Zap, color: 'text-amber-600', bg: 'bg-amber-600/10' },
         { label: 'Top Candidates', value: '0', icon: FileUser, color: 'text-rose-600', bg: 'bg-rose-600/10' },
     ]);
-    const [activeJobs, setActiveJobs] = useState<any[]>([]);
-    const [user, setUser] = useState<any>(null);
+    const [activeJobs, setActiveJobs] = useState<ActiveJob[]>([]);
+    const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     const [uploadingJobId, setUploadingJobId] = useState<string | null>(null);
     const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -39,29 +77,32 @@ const Dashboard = () => {
                     axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cvs${userData.role === 'admin' ? '' : '/my-cvs'}`, config)
                 ]);
 
-                const jobs = jobsRes.data;
-                const cvs = cvsRes.data;
+                const jobs = jobsRes.data as JobData[];
+                const cvs = cvsRes.data as CVItem[];
 
                 setStats([
                     { label: 'Total Applicants', value: cvs.length.toLocaleString(), icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
                     { label: 'Active Jobs', value: jobs.length.toLocaleString(), icon: Briefcase, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
-                    { label: 'AI Scans Run', value: cvs.filter((c: any) => c.status === 'analyzed').length.toLocaleString(), icon: Zap, color: 'text-amber-600', bg: 'bg-amber-600/10' },
-                    { label: 'Top Candidates', value: cvs.filter((c: any) => c.score > 75).length.toLocaleString(), icon: FileUser, color: 'text-rose-600', bg: 'bg-rose-600/10' },
+                    { label: 'AI Scans Run', value: cvs.filter((c) => c.status === 'analyzed').length.toLocaleString(), icon: Zap, color: 'text-amber-600', bg: 'bg-amber-600/10' },
+                    { label: 'Top Candidates', value: cvs.filter((c) => (c.score ?? 0) > 75).length.toLocaleString(), icon: FileUser, color: 'text-rose-600', bg: 'bg-rose-600/10' },
                 ]);
 
-                const mappedJobs = jobs.map((j: any) => ({
+                const mappedJobs = jobs.map((j: JobData) => ({
                     _id: j._id,
                     title: j.title,
                     description: j.description,
                     location: j.location,
-                    applicants: cvs.filter((c: any) => c.matchedJobId?._id === j._id || c.matchedJobId === j._id).length,
+                    applicants: cvs.filter((c) => {
+                        const matchedJobId = typeof c.matchedJobId === 'string' ? c.matchedJobId : c.matchedJobId?._id;
+                        return matchedJobId === j._id;
+                    }).length,
                     status: 'Active',
                     date: new Date(j.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
                 }));
                 setActiveJobs(mappedJobs);
 
-            } catch (err) {
-                console.error("Dashboard failed to fetch real data", err);
+            } catch (error) {
+                console.error("Dashboard failed to fetch real data", error);
             } finally {
                 setLoading(false);
             }
@@ -94,7 +135,7 @@ const Dashboard = () => {
                 setUploadingJobId(null);
                 window.location.reload(); 
             }, 2000);
-        } catch (err: any) {
+        } catch {
             setUploadStatus('Failed to upload/analyze profile.');
             setTimeout(() => setUploadStatus(null), 3000);
         }

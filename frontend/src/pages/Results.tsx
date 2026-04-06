@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Award, Search, Filter, ExternalLink, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -22,19 +22,17 @@ interface AnalysisResult {
 }
 
 const Results = () => {
-    const [results, setResults] = useState<AnalysisResult | null>(null);
+    const results = useMemo<AnalysisResult | null>(() => {
+        const stored = localStorage.getItem('latest_results');
+        if (!stored) return null;
+        const data = JSON.parse(stored) as AnalysisResult;
+        return {
+            ...data,
+            candidates: [...data.candidates].sort((a, b) => b.score - a.score),
+        };
+    }, []);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-
-    useEffect(() => {
-        const stored = localStorage.getItem('latest_results');
-        if (stored) {
-            const data = JSON.parse(stored);
-            // Sorting by score to get Rank
-            data.candidates.sort((a: any, b: any) => b.score - a.score);
-            setResults(data);
-        }
-    }, []);
 
     const getVerdict = (score: number) => {
         if (score >= 90) return { text: 'Strong Hire', style: 'bg-emerald-100 text-emerald-600 border-emerald-200' };

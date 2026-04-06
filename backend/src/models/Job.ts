@@ -5,6 +5,7 @@ const JobSchema = new mongoose.Schema({
   description: { type: String, required: true },
   skills: [String],
   qualifications: [String],
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   last_updated: { type: Date, default: Date.now },
 }, { timestamps: true });
 

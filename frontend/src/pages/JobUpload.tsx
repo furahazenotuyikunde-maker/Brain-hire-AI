@@ -51,7 +51,17 @@ const JobUpload = () => {
             });
 
             const jobId = jobRes.data._id;
-            const analysisResults = [];
+            interface CVAnalysisResult {
+                candidateName: string;
+                score: number;
+                analysis: {
+                    reasoning: string;
+                    matchedKeywords: string[];
+                };
+                status: string;
+            }
+
+            const analysisResults: CVAnalysisResult[] = [];
 
             // 2. Upload each CV
             for (const file of files) {
@@ -65,7 +75,7 @@ const JobUpload = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                analysisResults.push(cvRes.data);
+                analysisResults.push(cvRes.data as CVAnalysisResult);
             }
 
             const formattedResults = {
@@ -84,9 +94,13 @@ const JobUpload = () => {
             localStorage.setItem('latest_results', JSON.stringify(formattedResults));
             setStatus('Intelligence analysis complete! Porting data...');
             setTimeout(() => navigate('/results'), 1500);
-        } catch (error: any) {
+        } catch (error) {
             console.error('API Error:', error);
-            const errMsg = error.response?.data?.error || error.message || 'Communication failure with ranking server.';
+            const errMsg = axios.isAxiosError(error)
+                ? error.response?.data?.error || error.message
+                : error instanceof Error
+                ? error.message
+                : 'Communication failure with ranking server.';
             setStatus(`Analysis Failure: ${errMsg}`);
             setLoading(false);
         }

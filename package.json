@@ -5,9 +5,11 @@
   "scripts": {
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
+    "dev:next": "npm run dev --prefix frontend-next",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "install-all": "npm install --prefix frontend && npm install --prefix backend",
-    "build-all": "npm run build --prefix backend && npm run build --prefix frontend"
+    "install-all": "npm install --prefix frontend && npm install --prefix backend && npm install --prefix frontend-next",
+    "build:next": "npm run build --prefix frontend-next",
+    "build-all": "npm run build --prefix backend && npm run build --prefix frontend && npm run build --prefix frontend-next"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

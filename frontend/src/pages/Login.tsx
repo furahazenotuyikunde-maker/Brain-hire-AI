@@ -23,8 +23,13 @@ const Login = () => {
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data.user));
             navigate('/dashboard');
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Authentication failed. Please check your credentials.');
+        } catch (error) {
+            const message = axios.isAxiosError(error)
+                ? error.response?.data?.error || error.message
+                : error instanceof Error
+                ? error.message
+                : 'Authentication failed. Please check your credentials.';
+            setError(message);
         } finally {
             setLoading(false);
         }

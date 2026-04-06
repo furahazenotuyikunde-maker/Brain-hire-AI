@@ -1,10 +1,10 @@
 import express, { Response } from 'express';
 import multer from 'multer';
-import path from 'path';
 import fs from 'fs';
 import { CV } from '../models/CV';
 import { Job } from '../models/Job';
 import { auth, AuthRequest } from '../middleware/auth';
+import { generateAIAnalysis } from '../services/ai';
 const pdf = require('pdf-parse');
 
 const router = express.Router();
@@ -28,38 +28,6 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
-
-// Helper: Calculate relevance score (Advanced version for table UI)
-const calculateScore = (jd: string, cvText: string) => {
-    const jdKeywords = (jd.toLowerCase().match(/\b(\w+)\b/g) || []) as string[];
-    const cvKeywords = (cvText.toLowerCase().match(/\b(\w+)\b/g) || []) as string[];
-    
-    const uniqueJdKeywords = new Set(jdKeywords.filter((k: string) => k.length > 3));
-    const matchedKeywords = Array.from(uniqueJdKeywords).filter((k: string) => cvKeywords.includes(k));
-    
-    const score = uniqueJdKeywords.size > 0 ? Math.round((matchedKeywords.length / uniqueJdKeywords.size) * 100) : 0;
-    
-    // Suggesting strengths based on top matches
-    const strengths = matchedKeywords.length > 0 
-        ? `Expertise in ${matchedKeywords.slice(0, 3).join(', ')}. Strong technical alignment.`
-        : 'General professional experience.';
-        
-    // Suggesting gaps based on missing JD keywords
-    const missing = Array.from(uniqueJdKeywords).filter(k => !matchedKeywords.includes(k));
-    const gaps = missing.length > 0
-        ? `Lower exposure to ${missing.slice(0, 2).join(', ')}.`
-        : 'Minimal requirement gaps detected.';
-
-    return { 
-        score, 
-        matchedKeywords: matchedKeywords.slice(0, 10),
-        reasoning: matchedKeywords.length > 2 
-            ? `Demonstrates proficiency in ${matchedKeywords.slice(0, 3).join(', ')}.` 
-            : 'Candidate does not strictly meet all core technical requirements.',
-        strengths,
-        gaps
-    };
-};
 
 // POST upload and analyze
 router.post('/upload', auth, upload.single('cv'), async (req: AuthRequest, res: Response) => {
@@ -86,17 +54,17 @@ router.post('/upload', auth, upload.single('cv'), async (req: AuthRequest, res: 
         text = '';
     }
 
-    const { score, reasoning, matchedKeywords, strengths, gaps } = calculateScore(job.description, text);
+    const analysis = await generateAIAnalysis(job.description, text);
 
     const newCV = new CV({
         userId: req.user?.id,
         fileName: file.originalname,
-        fileUrl: file.path, 
-        candidateName: file.originalname.split('-').pop()?.replace('.pdf','').replace('.txt',''),
+        fileUrl: file.path,
+        candidateName: file.originalname.replace(/\.(pdf|txt)$/i, '').replace(/^[0-9]+-/, ''),
         matchedJobId: jobId,
-        score,
+        score: analysis.score,
         status: 'analyzed',
-        analysis: { reasoning, matchedKeywords, strengths, gaps }
+        analysis,
     });
 
     await newCV.save();

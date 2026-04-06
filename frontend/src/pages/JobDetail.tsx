@@ -7,17 +7,26 @@ import axios from 'axios';
 interface Job {
     _id: string;
     title: string;
-    company: string;
-    location: string;
+    company?: string;
+    location?: string;
     description: string;
-    type: string;
+    type?: string;
     createdAt: string;
+}
+
+interface ApplicantCV {
+    candidateName?: string;
+    score?: number;
+    analysis?: {
+        reasoning?: string;
+        matchedKeywords?: string[];
+    };
 }
 
 const JobDetail = () => {
     const { id } = useParams<{ id: string }>();
     const [job, setJob] = useState<Job | null>(null);
-    const [applicants, setApplicants] = useState<any[]>([]);
+    const [applicants, setApplicants] = useState<ApplicantCV[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -33,10 +42,10 @@ const JobDetail = () => {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 ]);
-                setJob(jobRes.data);
-                setApplicants(cvRes.data);
-            } catch (err) {
-                console.error('Failed to fetch data');
+                setJob(jobRes.data as Job);
+                setApplicants(cvRes.data as ApplicantCV[]);
+            } catch (error) {
+                console.error('Failed to fetch data', error);
             } finally {
                 setLoading(false);
             }
@@ -60,7 +69,8 @@ const JobDetail = () => {
                 }
             });
             navigate('/results');
-        } catch (err) {
+        } catch (error) {
+            console.error('Upload failed', error);
             alert('Upload failed. Please login first.');
             navigate('/login');
         } finally {
@@ -163,8 +173,8 @@ const JobDetail = () => {
                                         <div className="space-y-3 flex-1">
                                             <div className="flex items-center gap-4">
                                                 <h4 className="text-2xl font-black text-slate-900 tracking-tight">{cv.candidateName || 'Anonymous Expert'}</h4>
-                                                <div className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${cv.score > 70 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                                                    {cv.score}% match
+                                                <div className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest ${(cv.score ?? 0) > 70 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                    {cv.score ?? 0}% match
                                                 </div>
                                             </div>
                                             <p className="text-slate-500 font-medium leading-relaxed">{cv.analysis?.reasoning}</p>

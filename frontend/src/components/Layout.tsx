@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FileUp, ShieldCheck, LogOut } from 'lucide-react';
 import logo from '../assets/logo.png';
 
+interface User {
+  name: string;
+  role?: string;
+}
+
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [location]);
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? (JSON.parse(storedUser) as User) : null;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setUser(null);
     navigate('/login');
   };
 
